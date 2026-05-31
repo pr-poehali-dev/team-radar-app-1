@@ -86,9 +86,15 @@ export default function PricingPage({ onSelect }: PricingPageProps) {
           <h1 className="text-3xl md:text-4xl font-bold mb-3 leading-tight">
             Выберите тариф для вашей команды
           </h1>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto">
+          <p className="text-muted-foreground text-sm max-w-md mx-auto mb-4">
             Инструмент анализа, управления и развития команды. Выберите подходящий план и начните прямо сейчас.
           </p>
+          {/* Trial banner */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-radar-green/10 border border-radar-green/30 animate-scale-in">
+            <span className="w-2 h-2 rounded-full bg-radar-green pulse-dot" style={{ color: "hsl(var(--radar-green))" }} />
+            <span className="text-sm font-semibold text-radar-green">14 дней бесплатно</span>
+            <span className="text-xs text-muted-foreground">· карта не нужна</span>
+          </div>
         </div>
 
         {/* Billing toggle */}
@@ -152,11 +158,16 @@ export default function PricingPage({ onSelect }: PricingPageProps) {
 
               {/* Price */}
               <div className="mb-6">
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-2xl font-bold text-radar-green font-mono">0 ₽</span>
+                  <span className="text-sm text-muted-foreground">· 14 дней</span>
+                </div>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-4xl font-bold font-mono ${plan.colorClass}`}>
+                  <span className="text-xs text-muted-foreground">Затем</span>
+                  <span className={`text-xl font-bold font-mono ${plan.colorClass}`}>
                     {(billing === "yearly" ? plan.price.yearly : plan.price.monthly).toLocaleString("ru-RU")}
                   </span>
-                  <span className="text-muted-foreground text-sm">₽ / мес</span>
+                  <span className="text-muted-foreground text-xs">₽ / мес</span>
                 </div>
                 {billing === "yearly" && (
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -197,8 +208,11 @@ export default function PricingPage({ onSelect }: PricingPageProps) {
                   }
                 `}
               >
-                Начать с тарифа «{plan.name}»
+                Начать 14 дней бесплатно
               </button>
+              <p className="text-center text-[11px] text-muted-foreground mt-2">
+                Тариф «{plan.name}» · карта не нужна
+              </p>
             </div>
           ))}
         </div>

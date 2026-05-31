@@ -15,9 +15,10 @@ const pageTitles: Record<NavPage, { title: string; subtitle: string }> = {
 interface TopBarProps {
   activePage: NavPage;
   plan: Plan;
+  trialDaysLeft: number;
 }
 
-export default function TopBar({ activePage, plan }: TopBarProps) {
+export default function TopBar({ activePage, plan, trialDaysLeft }: TopBarProps) {
   const { title, subtitle } = pageTitles[activePage];
 
   return (
@@ -30,6 +31,14 @@ export default function TopBar({ activePage, plan }: TopBarProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Trial counter */}
+        {trialDaysLeft > 0 && (
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-radar-green/30 bg-radar-green/10 text-[11px] font-semibold text-radar-green">
+            <Icon name="Clock" size={11} />
+            Пробный · {trialDaysLeft} дн
+          </div>
+        )}
+
         {/* Plan badge */}
         <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-semibold
           ${plan === "premium"

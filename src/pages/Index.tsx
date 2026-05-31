@@ -13,9 +13,17 @@ import PlanBadge from "@/components/PlanBadge";
 
 export type NavPage = "home" | "fishbone" | "pulse" | "okr" | "rituals" | "settings" | "docs";
 
+const TRIAL_DAYS = 14;
+
 export default function Index() {
   const [activePage, setActivePage] = useState<NavPage>("home");
   const [plan, setPlan] = useState<Plan | null>(null);
+  const [trialStart] = useState<Date>(() => new Date());
+
+  const trialDaysLeft = Math.max(
+    0,
+    TRIAL_DAYS - Math.floor((Date.now() - trialStart.getTime()) / 86_400_000)
+  );
 
   if (!plan) {
     return <PricingPage onSelect={setPlan} />;
@@ -37,11 +45,11 @@ export default function Index() {
     <div className="flex h-screen bg-background overflow-hidden">
       <Sidebar activePage={activePage} onNavigate={setActivePage} />
       <div className="flex flex-col flex-1 min-w-0">
-        <TopBar activePage={activePage} plan={plan} />
+        <TopBar activePage={activePage} plan={plan} trialDaysLeft={trialDaysLeft} />
         <main className="flex-1 overflow-y-auto">
           {renderPage()}
         </main>
-        <PlanBadge plan={plan} onUpgrade={() => setPlan(null)} />
+        <PlanBadge plan={plan} trialDaysLeft={trialDaysLeft} onUpgrade={() => setPlan(null)} />
       </div>
     </div>
   );
