@@ -59,9 +59,22 @@ const plans = [
   },
 ];
 
+type Tab = "plans" | "billing" | "history";
+
+const payments = [
+  { id: "INV-0012", date: "01 мая 2026", plan: "Премиум", amount: 7900, status: "paid" },
+  { id: "INV-0011", date: "01 апр 2026", plan: "Премиум", amount: 7900, status: "paid" },
+  { id: "INV-0010", date: "01 мар 2026", plan: "Стандарт", amount: 2900, status: "paid" },
+  { id: "INV-0009", date: "01 фев 2026", plan: "Стандарт", amount: 2900, status: "paid" },
+  { id: "INV-0008", date: "01 янв 2026", plan: "Стандарт", amount: 2900, status: "refunded" },
+];
+
 export default function PlansPage({ plan, onChangePlan }: PlansPageProps) {
+  const [activeTab, setActiveTab] = useState<Tab>("plans");
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [confirmPlan, setConfirmPlan] = useState<Plan | null>(null);
+  const [invoiceForm, setInvoiceForm] = useState({ company: "", inn: "", email: "", address: "" });
+  const [invoiceSent, setInvoiceSent] = useState(false);
 
   const handleSelect = (id: Plan) => {
     if (id === plan) return;
@@ -77,6 +90,30 @@ export default function PlansPage({ plan, onChangePlan }: PlansPageProps) {
 
   return (
     <div className="p-4 md:p-6 space-y-6 animate-fade-in max-w-4xl">
+
+      {/* Tab navigation */}
+      <div className="flex gap-1 p-1 bg-muted/40 border border-border rounded-xl w-fit">
+        {([
+          { id: "plans", icon: "CreditCard", label: "Тарифы" },
+          { id: "billing", icon: "FileText", label: "Счёт" },
+          { id: "history", icon: "Clock", label: "История" },
+        ] as { id: Tab; icon: string; label: string }[]).map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setActiveTab(t.id)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+              activeTab === t.id
+                ? "bg-background text-foreground shadow-sm border border-border"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Icon name={t.icon} size={13} />
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "plans" && (<>
 
       {/* Current plan banner */}
       <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${
@@ -235,6 +272,200 @@ export default function PlansPage({ plan, onChangePlan }: PlansPageProps) {
           </div>
         ))}
       </div>
+
+      </>)}
+
+      {/* ── Billing tab ── */}
+      {activeTab === "billing" && (
+        <div className="space-y-5 animate-fade-in">
+          {invoiceSent ? (
+            <div className="metric-card flex flex-col items-center gap-3 py-10 animate-scale-in">
+              <div className="w-12 h-12 rounded-full bg-radar-green/15 flex items-center justify-center">
+                <Icon name="CheckCircle2" size={24} className="text-radar-green" />
+              </div>
+              <p className="font-semibold text-base">Счёт отправлен</p>
+              <p className="text-xs text-muted-foreground text-center max-w-xs">
+                Счёт на оплату отправлен на <span className="text-foreground font-medium">{invoiceForm.email}</span>.<br />
+                Обычно приходит в течение 5 минут.
+              </p>
+              <button
+                onClick={() => setInvoiceSent(false)}
+                className="mt-2 text-xs text-primary hover:underline"
+              >
+                Выставить ещё один счёт
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="metric-card">
+                <div className="flex items-center gap-2 mb-4">
+                  <Icon name="FileText" size={14} className="text-primary" />
+                  <h2 className="text-sm font-semibold">Выставление счёта для юридических лиц</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[
+                    { key: "company", label: "Название организации", placeholder: "ООО «Компания»" },
+                    { key: "inn", label: "ИНН / КПП", placeholder: "7700000000 / 770000000" },
+                    { key: "email", label: "Email для счёта", placeholder: "buh@company.ru" },
+                    { key: "address", label: "Юридический адрес", placeholder: "г. Москва, ул. Примерная, д. 1" },
+                  ].map((field) => (
+                    <div key={field.key} className={field.key === "address" ? "sm:col-span-2" : ""}>
+                      <label className="text-[11px] text-muted-foreground mb-1.5 block">{field.label}</label>
+                      <input
+                        value={invoiceForm[field.key as keyof typeof invoiceForm]}
+                        onChange={(e) => setInvoiceForm((f) => ({ ...f, [field.key]: e.target.value }))}
+                        placeholder={field.placeholder}
+                        className="w-full bg-muted/40 border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-primary/50 placeholder:text-muted-foreground/50 transition-colors"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="metric-card">
+                <div className="flex items-center gap-2 mb-3">
+                  <Icon name="Receipt" size={14} className="text-radar-amber" />
+                  <h2 className="text-sm font-semibold">Счёт к выставлению</h2>
+                </div>
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between text-xs py-2 border-b border-border">
+                    <span className="text-muted-foreground">Тариф</span>
+                    <span className="font-medium">{plan === "premium" ? "Премиум" : "Стандарт"}</span>
+                  </div>
+                  <div className="flex justify-between text-xs py-2 border-b border-border">
+                    <span className="text-muted-foreground">Период</span>
+                    <span className="font-medium">1 месяц</span>
+                  </div>
+                  <div className="flex justify-between text-xs py-2 border-b border-border">
+                    <span className="text-muted-foreground">Сумма без НДС</span>
+                    <span className="font-mono font-medium">
+                      {Math.round((plan === "premium" ? 7900 : 2900) / 1.2).toLocaleString("ru-RU")} ₽
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-xs py-2 border-b border-border">
+                    <span className="text-muted-foreground">НДС 20%</span>
+                    <span className="font-mono font-medium">
+                      {Math.round((plan === "premium" ? 7900 : 2900) * 0.2 / 1.2).toLocaleString("ru-RU")} ₽
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm py-2 font-bold">
+                    <span>Итого</span>
+                    <span className="font-mono text-primary">
+                      {(plan === "premium" ? 7900 : 2900).toLocaleString("ru-RU")} ₽
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => invoiceForm.company && invoiceForm.inn && invoiceForm.email && setInvoiceSent(true)}
+                  className={`w-full py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
+                    invoiceForm.company && invoiceForm.inn && invoiceForm.email
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : "bg-muted text-muted-foreground cursor-not-allowed"
+                  }`}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <Icon name="Send" size={14} />
+                    Выставить счёт
+                  </span>
+                </button>
+                {(!invoiceForm.company || !invoiceForm.inn || !invoiceForm.email) && (
+                  <p className="text-center text-[11px] text-muted-foreground mt-2">
+                    Заполните название, ИНН и email
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ── History tab ── */}
+      {activeTab === "history" && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="metric-card">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Icon name="Clock" size={14} className="text-radar-purple" />
+                <h2 className="text-sm font-semibold">История платежей</h2>
+              </div>
+              <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <Icon name="Download" size={12} />
+                Скачать всё
+              </button>
+            </div>
+
+            <div className="space-y-1">
+              {/* Header */}
+              <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-3 px-3 py-1.5">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Счёт</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Дата</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider hidden sm:block">Тариф</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Сумма</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Статус</span>
+              </div>
+
+              {payments.map((p, i) => (
+                <div
+                  key={p.id}
+                  className={`grid grid-cols-[1fr_auto_auto_auto_auto] gap-3 items-center px-3 py-2.5 rounded-lg hover:bg-muted/30 transition-colors animate-fade-in stagger-${Math.min(i + 1, 6)}`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Icon name="FileText" size={13} className="text-muted-foreground shrink-0" />
+                    <span className="text-xs font-mono font-medium truncate">{p.id}</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">{p.date}</span>
+                  <span className="text-xs text-muted-foreground hidden sm:block whitespace-nowrap">{p.plan}</span>
+                  <span className="text-xs font-mono font-semibold whitespace-nowrap">
+                    {p.amount.toLocaleString("ru-RU")} ₽
+                  </span>
+                  <span className={`tag-chip text-[10px] whitespace-nowrap ${
+                    p.status === "paid"
+                      ? "bg-radar-green/10 text-radar-green"
+                      : "bg-radar-amber/10 text-radar-amber"
+                  }`}>
+                    {p.status === "paid" ? "Оплачен" : "Возврат"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Summary */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              {
+                label: "Всего потрачено",
+                value: payments.filter(p => p.status === "paid").reduce((s, p) => s + p.amount, 0).toLocaleString("ru-RU") + " ₽",
+                icon: "TrendingUp",
+                color: "text-primary",
+                bg: "bg-primary/10",
+              },
+              {
+                label: "Платежей",
+                value: payments.filter(p => p.status === "paid").length,
+                icon: "CheckCircle2",
+                color: "text-radar-green",
+                bg: "bg-radar-green/10",
+              },
+              {
+                label: "Возвратов",
+                value: payments.filter(p => p.status === "refunded").length,
+                icon: "RefreshCw",
+                color: "text-radar-amber",
+                bg: "bg-radar-amber/10",
+              },
+            ].map((s) => (
+              <div key={s.label} className="metric-card text-center">
+                <div className={`p-2 rounded-lg ${s.bg} w-fit mx-auto mb-2`}>
+                  <Icon name={s.icon} size={14} className={s.color} />
+                </div>
+                <div className={`text-lg font-bold font-mono ${s.color}`}>{s.value}</div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Confirm modal */}
       {confirmPlan && (
