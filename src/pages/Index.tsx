@@ -1,17 +1,40 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import Dashboard from "@/components/Dashboard";
+import FishbonePage from "@/components/FishbonePage";
+import PulsePage from "@/components/PulsePage";
+import OKRPage from "@/components/OKRPage";
+import RitualsPage from "@/components/RitualsPage";
+import SettingsPage from "@/components/SettingsPage";
+import DocsPage from "@/components/DocsPage";
+import Sidebar from "@/components/Sidebar";
+import TopBar from "@/components/TopBar";
 
-const Index = () => {
+export type NavPage = "home" | "fishbone" | "pulse" | "okr" | "rituals" | "settings" | "docs";
+
+export default function Index() {
+  const [activePage, setActivePage] = useState<NavPage>("home");
+
+  const renderPage = () => {
+    switch (activePage) {
+      case "home": return <Dashboard onNavigate={setActivePage} />;
+      case "fishbone": return <FishbonePage />;
+      case "pulse": return <PulsePage />;
+      case "okr": return <OKRPage />;
+      case "rituals": return <RitualsPage />;
+      case "settings": return <SettingsPage />;
+      case "docs": return <DocsPage />;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 color-black text-black">Добро пожаловать!</h1>
-        <p className="text-xl text-gray-600">тут будет отображаться ваш проект</p>
+    <div className="flex h-screen bg-background overflow-hidden">
+      <Sidebar activePage={activePage} onNavigate={setActivePage} />
+      <div className="flex flex-col flex-1 min-w-0">
+        <TopBar activePage={activePage} />
+        <main className="flex-1 overflow-y-auto">
+          {renderPage()}
+        </main>
       </div>
-      <span className="absolute bottom-8 left-1/2 -translate-x-1/2 inline-block bg-[#FF6637] text-white text-sm px-4 py-2 rounded-full whitespace-nowrap">
-        Подождите 5 минут, Юра создает первую версию проекта с нуля
-      </span>
     </div>
   );
-};
-
-export default Index;
+}
