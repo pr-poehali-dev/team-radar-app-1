@@ -1,8 +1,10 @@
 import { NavPage } from "@/pages/Index";
 import Icon from "@/components/ui/icon";
+import { Plan } from "@/components/PricingPage";
 
 interface DashboardProps {
   onNavigate: (page: NavPage) => void;
+  plan: Plan;
 }
 
 const metrics = [
@@ -69,9 +71,25 @@ const statusLabels: Record<string, string> = {
   resolved: "Закрыта",
 };
 
-export default function Dashboard({ onNavigate }: DashboardProps) {
+export default function Dashboard({ onNavigate, plan }: DashboardProps) {
   return (
     <div className="p-4 md:p-6 space-y-6 animate-fade-in">
+      {/* Plan info banner for standard */}
+      {plan === "standard" && (
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-primary/5 border border-primary/20 animate-fade-in">
+          <Icon name="Users" size={14} className="text-primary shrink-0" />
+          <p className="text-xs text-muted-foreground flex-1">
+            Тариф <span className="text-primary font-medium">Стандарт</span> · до 10 участников · коллаборация и Alice AI недоступны
+          </p>
+          <button
+            onClick={() => onNavigate("settings")}
+            className="text-xs text-primary font-medium hover:underline shrink-0"
+          >
+            Улучшить →
+          </button>
+        </div>
+      )}
+
       {/* Metrics row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {metrics.map((m, i) => (

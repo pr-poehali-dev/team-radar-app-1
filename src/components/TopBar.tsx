@@ -1,5 +1,6 @@
 import Icon from "@/components/ui/icon";
 import { NavPage } from "@/pages/Index";
+import { Plan } from "@/components/PricingPage";
 
 const pageTitles: Record<NavPage, { title: string; subtitle: string }> = {
   home: { title: "Командный радар", subtitle: "Обзор состояния команды" },
@@ -13,9 +14,10 @@ const pageTitles: Record<NavPage, { title: string; subtitle: string }> = {
 
 interface TopBarProps {
   activePage: NavPage;
+  plan: Plan;
 }
 
-export default function TopBar({ activePage }: TopBarProps) {
+export default function TopBar({ activePage, plan }: TopBarProps) {
   const { title, subtitle } = pageTitles[activePage];
 
   return (
@@ -28,10 +30,21 @@ export default function TopBar({ activePage }: TopBarProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Plan badge */}
+        <div className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-semibold
+          ${plan === "premium"
+            ? "bg-radar-cyan/10 border-radar-cyan/30 text-radar-cyan"
+            : "bg-primary/10 border-primary/30 text-primary"
+          }`}
+        >
+          <Icon name={plan === "premium" ? "Building2" : "Users"} size={11} />
+          {plan === "premium" ? "Премиум" : "Стандарт"}
+        </div>
+
         <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/50 border border-border text-xs text-muted-foreground">
           <Icon name="Sparkles" size={12} className="text-primary" />
           <span>Alice AI</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-radar-green" />
+          <span className={`w-1.5 h-1.5 rounded-full ${plan === "premium" ? "bg-radar-green" : "bg-muted-foreground"}`} />
         </div>
 
         <button className="relative w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">

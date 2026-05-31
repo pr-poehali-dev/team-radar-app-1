@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
+import { Plan } from "@/components/PricingPage";
 
 interface KeyResult {
   text: string;
@@ -61,11 +62,14 @@ function getProgressColor(p: number) {
   return "#ef4444";
 }
 
-export default function OKRPage() {
+export default function OKRPage({ plan }: { plan: Plan }) {
   const [filter, setFilter] = useState<"all" | "strategic" | "wellbeing">("all");
   const [expandedId, setExpandedId] = useState<string | null>("o1");
 
-  const filtered = objectives.filter((o) => filter === "all" || o.category === filter);
+  const OKR_LIMIT = plan === "standard" ? 5 : Infinity;
+  const filtered = objectives
+    .filter((o) => filter === "all" || o.category === filter)
+    .slice(0, OKR_LIMIT);
 
   const avgProgress = Math.round(
     objectives.flatMap((o) => o.keyResults).reduce((sum, kr) => sum + kr.progress, 0) /

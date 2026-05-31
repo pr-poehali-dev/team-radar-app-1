@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
+import { Plan } from "@/components/PricingPage";
 
 interface Cause {
   id: string;
@@ -77,7 +78,7 @@ const aiSuggestions = [
   "Слабая коммуникация",
 ];
 
-export default function FishbonePage() {
+export default function FishbonePage({ plan }: { plan: Plan }) {
   const [problem, setProblem] = useState("Срыв сроков проекта Q2");
   const [categories, setCategories] = useState<Category[]>(defaultCategories);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -118,9 +119,18 @@ export default function FishbonePage() {
           <p className="text-xs text-muted-foreground">{totalCauses} причин в {categories.length} категориях</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors">
+          <button
+            disabled={plan === "standard"}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs transition-colors
+              ${plan === "standard"
+                ? "border-border text-muted-foreground/40 cursor-not-allowed"
+                : "border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
+              }`}
+            title={plan === "standard" ? "Доступно в тарифе Премиум" : ""}
+          >
             <Icon name="Users" size={12} />
             Совместно
+            {plan === "standard" && <Icon name="Lock" size={10} className="ml-0.5 opacity-50" />}
           </button>
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors">
             <Icon name="Download" size={12} />
