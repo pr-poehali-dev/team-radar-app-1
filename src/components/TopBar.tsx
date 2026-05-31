@@ -10,6 +10,7 @@ const pageTitles: Record<NavPage, { title: string; subtitle: string }> = {
   rituals: { title: "Ритуалы", subtitle: "Культура и регулярные практики" },
   settings: { title: "Настройки", subtitle: "Параметры команды и профиля" },
   docs: { title: "Документация", subtitle: "Гайды и лучшие практики" },
+  pricing: { title: "Тарифы", subtitle: "Управление подпиской" },
 };
 
 interface TopBarProps {

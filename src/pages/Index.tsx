@@ -6,12 +6,13 @@ import OKRPage from "@/components/OKRPage";
 import RitualsPage from "@/components/RitualsPage";
 import SettingsPage from "@/components/SettingsPage";
 import DocsPage from "@/components/DocsPage";
+import PlansPage from "@/components/PlansPage";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import PricingPage, { Plan } from "@/components/PricingPage";
 import PlanBadge from "@/components/PlanBadge";
 
-export type NavPage = "home" | "fishbone" | "pulse" | "okr" | "rituals" | "settings" | "docs";
+export type NavPage = "home" | "fishbone" | "pulse" | "okr" | "rituals" | "settings" | "docs" | "pricing";
 
 const TRIAL_DAYS = 14;
 
@@ -38,6 +39,7 @@ export default function Index() {
       case "rituals": return <RitualsPage />;
       case "settings": return <SettingsPage plan={plan} onChangePlan={() => setPlan(null)} />;
       case "docs": return <DocsPage />;
+      case "pricing": return <PlansPage plan={plan} onChangePlan={setPlan} />;
     }
   };
 

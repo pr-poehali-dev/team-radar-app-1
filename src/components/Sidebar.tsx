@@ -14,7 +14,6 @@ const navItems: NavItem[] = [
   { id: "okr", icon: "Target", label: "OKR" },
   { id: "rituals", icon: "CalendarDays", label: "Ритуалы" },
   { id: "docs", icon: "BookOpen", label: "Документы" },
-  { id: "settings", icon: "Settings2", label: "Настройки" },
 ];
 
 interface SidebarProps {
@@ -44,6 +43,15 @@ export default function Sidebar({ activePage, onNavigate }: SidebarProps) {
       </nav>
 
       <div className="flex flex-col gap-1 w-full px-2">
+        <button
+          onClick={() => onNavigate("pricing")}
+          className={`nav-item w-full ${activePage === "pricing" ? "active" : ""}`}
+          title="Тарифы"
+        >
+          <Icon name="CreditCard" size={20} />
+          <span className="text-[10px] font-medium leading-none">Тарифы</span>
+        </button>
+
         <button
           onClick={() => onNavigate("settings")}
           className={`nav-item w-full ${activePage === "settings" ? "active" : ""}`}
